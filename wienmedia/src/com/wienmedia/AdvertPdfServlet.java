@@ -13,15 +13,21 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.HyphenationAuto;
+import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.hyphenation.Hyphenation;
+import com.itextpdf.text.pdf.hyphenation.Hyphenator;
 
 public class AdvertPdfServlet extends HttpServlet {
 	
@@ -85,8 +91,21 @@ public class AdvertPdfServlet extends HttpServlet {
 		Paragraph p3 = new Paragraph("Aktuelle Zeit: " + df.format(new Date()), pdfFont);
 		p3.setAlignment(Element.ALIGN_CENTER);
 		p3.setSpacingBefore(50);
-		p3.setSpacingAfter(30);
+		p3.setSpacingAfter(30);		
 		document.add(p3);
+		PdfPTable table = new PdfPTable(1);
+        table.setWidthPercentage(10);
+        Chunk chunk = new Chunk("Leistungsscheinziffer");
+        chunk.setHyphenation(new HyphenationAuto("de", "DE", 2,2));
+        table.addCell(new Phrase(chunk));
+        Phrase phrase = new Phrase();
+        phrase.setHyphenation(new HyphenationAuto("de", "DE", 2,2));
+        phrase.add(new Chunk("Leistungsscheinziffer"));
+        table.addCell(phrase);
+        document.add(table);
+        Hyphenator h = new Hyphenator("de", "DE", 2, 2);
+        Hyphenation s = h.hyphenate("Leistungsscheinziffer"); 
+        System.out.println(s);
 	}
 
 	private synchronized void initializeFonts() throws DocumentException, IOException {
